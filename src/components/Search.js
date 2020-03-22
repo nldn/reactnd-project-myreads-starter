@@ -11,32 +11,40 @@ class Search extends Component {
   };
 
   handleChange = (query) => {
-    this.setState(() => ({
-      query: query.trim()
-    }));
-  };
-
-  handleSubmit = (e) => {
-    e.preventDefault();
-
     const { books } = this.props;
 
-    BooksAPI.search(this.state.query)
-      .then((response) => {
-        response = response.map((book) => {
-          let b = books.filter((b1) => b1.id === book.id);
+    this.setState((prevState) => ({
+      ...prevState,
+      query: query
+    }));
 
-          if (b.length > 0) {
-            return b[0];
+    if (query.length > 0) {
+      BooksAPI.search(query)
+        .then((res) => {
+          if (res && !('error' in res)) {
+            res = res.map((book) => {
+              let b = books.filter((b1) => b1.id === book.id);
+              
+              return b.length > 0 ? b[0] : book;
+            });
+  
+            this.setState((prevState) => ({
+              ...prevState,
+              booksArray: res
+            }));
+          } else {
+            this.setState((prevState) => ({
+              ...prevState,
+              booksArray: []
+            }));
           };
-
-          return book;
         });
-
-        this.setState(() => ({
-          booksArray: response
-        }));
-      });
+    } else {
+      this.setState((prevState) => ({
+        ...prevState,
+        booksArray: []
+      }));
+    };
   };
 
   render() {
@@ -48,26 +56,23 @@ class Search extends Component {
         <div className="search-books-bar">
           <Link className='close-search' to='/'>Close</Link>
           <div className="search-books-input-wrapper">
-            <form onSubmit={this.handleSubmit}>
-              <input 
-                type="text" 
-                name='query'
-                value={query}
-                placeholder="Search by title or author" 
-                onChange={(e) => this.handleChange(e.target.value)}
-              />
-            </form>
-
+            <input 
+              type="text" 
+              name='query'
+              value={query}
+              placeholder="Search by title or author" 
+              onChange={(e) => this.handleChange(e.target.value)}
+            />
           </div>
         </div>
         
         <div className="search-books-results">
           <ol className="books-grid">
-            {booksArray.map((book) => (
+            {!('error' in booksArray) ? booksArray.map((book) => (
               <li key={book.id}>
                 <Book book={book} handleBookUpdate={handleBookUpdate} />
               </li>
-            ))}
+            )) : ''}
           </ol>
         </div>
       </div>
