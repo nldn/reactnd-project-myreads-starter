@@ -13,10 +13,7 @@ class Search extends Component {
   handleChange = (query) => {
     const { books } = this.props;
 
-    this.setState((prevState) => ({
-      ...prevState,
-      query: query
-    }));
+    this.setState({ query });
 
     if (query.length > 0) {
       BooksAPI.search(query)
@@ -28,22 +25,13 @@ class Search extends Component {
               return b.length > 0 ? b[0] : book;
             });
   
-            this.setState((prevState) => ({
-              ...prevState,
-              booksArray: res
-            }));
+            this.setState({ booksArray: res });
           } else {
-            this.setState((prevState) => ({
-              ...prevState,
-              booksArray: []
-            }));
+            this.setState({ booksArray: [] });
           };
         });
     } else {
-      this.setState((prevState) => ({
-        ...prevState,
-        booksArray: []
-      }));
+      this.setState({ booksArray: [] });
     };
   };
 
