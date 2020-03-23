@@ -21,28 +21,56 @@ class BooksApp extends React.Component {
       });
   };
 
+  // MY CODE
+  // handleBookUpdate = (book) => {
+  //   // my code
+  //   // let books = this.state.books;
+
+  //   // suggestion
+  //   let books = [...this.state.books];
+
+  //   let i = books.findIndex((b) => b.id === book.id);
+
+  //   if (i === -1) {
+  //     // if book is not in the state, add it
+  //     books.push(book);
+  //   } else {
+  //     // if book is in the state, remove it (if shelf is none) or update it
+  //     book.shelf === 'none' ? books.splice(i, 1) : books[i] = book;
+  //   };
+
+  //   // update book in state
+  //   this.setState(() => ({
+  //     books: books
+  //   }));
+
+  //   // update book in database
+  //   BooksAPI.update(book, book.shelf)
+  //     .then(() => {
+  //       console.log(`Updated book with ID: ${book.id}`);
+  //     });
+  // };
+
+  // SUGGESTION
   handleBookUpdate = (book) => {
-    let books = this.state.books;
-    let i = books.findIndex((b) => b.id === book.id);
+    this.setState((prevState) => {
+      let books = [...prevState.books];
 
-    if (i === -1) {
-      // if book is not in the state, add it
-      books.push(book);
-    } else {
-      // if book is in the state, remove it (if shelf is none) or update it
-      book.shelf === 'none' ? books.splice(i, 1) : books[i] = book;
-    };
+      let i = books.findIndex((b) => b.id === book.id);
 
-    // update book in state
-    this.setState(() => ({
-      books: books
-    }));
+      if (i === -1) {
+        books.push(book);
+      } else {
+        book.shelf === 'none' ? books.splice(i, 1) : (books[i] = book);
+      };
 
-    // update book in database
-    BooksAPI.update(book, book.shelf)
-      .then(() => {
-        console.log(`Updated book with ID: ${book.id}`);
-      });
+      BooksAPI.update(book, book.shelf)
+        .then(() => {
+          console.log(`Updated book with ID: ${book.id}`);
+        });
+
+      return { books };
+    });
   };
 
   render() {
